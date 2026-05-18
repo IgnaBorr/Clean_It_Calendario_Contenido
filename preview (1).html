@@ -1,4 +1,343 @@
+
 <!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cleanit Content Hub</title>
+
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+  />
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
+  <style>
+
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:Inter, sans-serif;
+    }
+
+    body{
+      background:#0f172a;
+      color:white;
+      padding:30px;
+    }
+
+    .topbar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:30px;
+    }
+
+    h1{
+      font-size:32px;
+    }
+
+    .btn{
+      border:none;
+      padding:12px 18px;
+      border-radius:12px;
+      cursor:pointer;
+      font-weight:600;
+    }
+
+    .btn-primary{
+      background:#2563eb;
+      color:white;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+      gap:20px;
+    }
+
+    .card{
+      background:#1e293b;
+      border-radius:18px;
+      padding:20px;
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+      border:1px solid rgba(255,255,255,0.06);
+    }
+
+    .card h3{
+      font-size:20px;
+    }
+
+    .muted{
+      color:#94a3b8;
+      line-height:1.5;
+    }
+
+    .badge{
+      background:#334155;
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:12px;
+      width:max-content;
+    }
+
+    .row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .modal{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,0.7);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:999;
+    }
+
+    .modal.open{
+      display:flex;
+    }
+
+    .modal-content{
+      width:100%;
+      max-width:520px;
+      background:#111827;
+      border-radius:24px;
+      padding:24px;
+      display:flex;
+      flex-direction:column;
+      gap:16px;
+    }
+
+    input,
+    textarea,
+    select{
+      width:100%;
+      background:#1f2937;
+      border:none;
+      color:white;
+      padding:14px;
+      border-radius:12px;
+      resize:none;
+    }
+
+    textarea{
+      min-height:120px;
+    }
+
+    .modal-footer{
+      display:flex;
+      justify-content:flex-end;
+      gap:10px;
+      margin-top:10px;
+    }
+
+    .btn-ghost{
+      background:#374151;
+      color:white;
+    }
+
+    .delete-btn{
+      background:#fee2e2;
+      color:#dc2626;
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="topbar">
+    <h1>Cleanit Content Hub</h1>
+
+    <button class="btn btn-primary" onclick="newContent()">
+      <i class="fa-solid fa-plus"></i>
+      Nueva tarea
+    </button>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <div class="modal" id="modal">
+
+    <div class="modal-content">
+
+      <h2>Nueva tarea</h2>
+
+      <input id="f-title" placeholder="Título" />
+
+      <textarea id="f-desc" placeholder="Descripción"></textarea>
+
+      <select id="f-channel">
+        <option value="Instagram">Instagram</option>
+        <option value="TikTok">TikTok</option>
+        <option value="YouTube">YouTube</option>
+      </select>
+
+      <select id="f-status">
+        <option value="Pendiente">Pendiente</option>
+        <option value="En progreso">En progreso</option>
+        <option value="Completado">Completado</option>
+      </select>
+
+      <input id="f-date" type="date" />
+
+      <select id="f-priority">
+        <option value="Baja">Baja</option>
+        <option value="Media">Media</option>
+        <option value="Alta">Alta</option>
+      </select>
+
+      <input id="f-tags" placeholder="Tags" />
+
+      <div class="modal-footer">
+
+        <button
+          class="btn delete-btn"
+          onclick="removeCurrentTask()"
+        >
+          <i class="fa-solid fa-trash"></i>
+          Eliminar
+        </button>
+
+        <button
+          class="btn btn-ghost"
+          onclick="closeModal()"
+        >
+          Cancelar
+        </button>
+
+        <button
+          class="btn btn-primary"
+          onclick="saveContent()"
+        >
+          Guardar
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+
+    const SUPABASE_URL = 'https://kwuwuaqncgmyyzuksoko.supabase.co';
+
+    const SUPABASE_KEY = 'sb_publishable_NdEKZn8OO5ORJEjj-XkWig_bv8xD3d3';
+
+    const supabaseClient = supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_KEY
+    );
+
+    let contents = [];
+    let editingId = null;
+
+    async function loadContents(){
+
+      const { data, error } = await supabaseClient
+        .from('contenidos')
+        .select('*')
+        .order('id', { ascending:false });
+
+      if(error){
+        console.error(error);
+        return;
+      }
+
+      contents = data || [];
+
+      render();
+    }
+
+    function render(){
+
+      const grid = document.getElementById('grid');
+
+      grid.innerHTML = '';
+
+      contents.forEach(item => {
+
+        grid.innerHTML += `
+
+          <div class="card" onclick="editContent(${item.id})">
+
+            <div class="row">
+              <div class="badge">${item.channel || ''}</div>
+              <div class="badge">${item.status || ''}</div>
+            </div>
+
+            <h3>${item.title || ''}</h3>
+
+            <p class="muted">
+              ${item.description || ''}
+            </p>
+
+            <div class="row">
+              <div class="badge">${item.priority || ''}</div>
+              <div class="badge">${item.date || ''}</div>
+            </div>
+
+          </div>
+
+        `;
+      });
+    }
+
+    function closeModal(){
+      document.getElementById('modal').classList.remove('open');
+    }
+
+    function newContent(){
+
+      editingId = null;
+
+      document.getElementById('f-title').value = '';
+      document.getElementById('f-desc').value = '';
+      document.getElementById('f-channel').value = 'Instagram';
+      document.getElementById('f-status').value = 'Pendiente';
+      document.getElementById('f-date').value = '';
+      document.getElementById('f-priority').value = 'Media';
+      document.getElementById('f-tags').value = '';
+
+      document.getElementById('modal').classList.add('open');
+    }
+
+    function editContent(id){
+
+      const item = contents.find(c => c.id === id);
+
+      if(!item) return;
+
+      editingId = item.id;
+
+      document.getElementById('f-title').value = item.title || '';
+      document.getElementById('f-desc').value = item.description || '';
+      document.getElementById('f-channel').value = item.channel || '';
+      document.getElementById('f-status').value = item.status || '';
+      document.getElementById('f-date').value = item.date || '';
+      document.getElementById('f-priority').value = item.priority || '';
+      document.getElementById('f-tags').value = item.tags || '';
+
+      document.getElementById('modal').classList.add('open');
+    }
+
+    async function saveContent(){
+
+      const title = document.getElementById('f-title').value.trim();
+
+      if(!title){
+        alert('El título es obligatorio');
+        return;
+      }
+
       const item = {
         title: title,
         description: document.getElementById('f-desc').value,
