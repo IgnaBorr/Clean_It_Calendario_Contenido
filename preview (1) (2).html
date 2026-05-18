@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clean It — Content Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      /* ── Clean It brand ── */
+      --blue:        #1a6ff4;
+      --blue-dark:   #1259d0;
+      --blue-deep:   #0d47a6;
+      --blue-light:  #e8f0fe;
+      --blue-mid:    #c2d6fc;
+      --blue-pale:   #f0f5ff;
+
+      /* ── Neutrals ── */
+      --bg:          #f4f6fb;
+      --surface:     #ffffff;
+      --surface2:    #f0f3f9;
+      --border:      #e2e8f4;
+      --ink:         #0f1929;
+      --ink2:        #4a5568;
+      --ink3:        #94a3b8;
+
+      /* ── Status / channels ── */
+      --green:       #16a34a;
+      --green-pale:  #dcfce7;
+      --amber:       #d97706;
+      --amber-pale:  #fef3c7;
+      --red:         #dc2626;
+      --red-pale:    #fee2e2;
+      --violet:      #7c3aed;
+      --violet-pale: #ede9fe;
+      --pink:        #db2777;
+      --pink-pale:   #fce7f3;
+
+      --r:    12px;
+      --r-sm: 8px;
+      --r-lg: 18px;
+    }
+
+    html, body { height: 100%; }
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    /* ═══════════════════════════════════════
+       LAYOUT
+    ═══════════════════════════════════════ */
+    .app { display: flex; height: 100vh; overflow: hidden; }
+
+    /* ═══════════════════════════════════════
+       SIDEBAR
+    ═══════════════════════════════════════ */
+    .sidebar {
+      width: 230px; flex-shrink: 0;
+      background: var(--blue);
+      display: flex; flex-direction: column;
+      position: relative; overflow: hidden;
+    }
+    /* subtle radial glow */
+    .sidebar::before {
+      content: ''; position: absolute;
+      top: -80px; right: -80px;
+      width: 260px; height: 260px; border-radius: 50%;
+      background: rgba(255,255,255,0.07); pointer-events: none;
+    }
+    .sidebar::after {
+      content: ''; position: absolute;
+      bottom: -60px; left: -60px;
+      width: 200px; height: 200px; border-radius: 50%;
+      background: rgba(255,255,255,0.05); pointer-events: none;
+    }
+
+    /* ── Logo ── */
+    .sidebar-logo {
+      padding: 28px 22px 22px;
+      border-bottom: 1px solid rgba(255,255,255,0.12);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .logo-drop {
+      font-size: 22px; line-height: 1;
+      filter: drop-shadow(0 1px 3px rgba(0,0,0,0.2));
+    }
+    .logo-text-wrap { display: flex; flex-direction: column; }
+    .logo-name {
+      font-size: 19px; font-weight: 700; color: #fff;
+      letter-spacing: -0.3px; line-height: 1.1;
+    }
+    .logo-sub {
+      font-size: 10px; font-weight: 500;
+      letter-spacing: 1.8px; text-transform: uppercase;
+      color: rgba(255,255,255,0.45); margin-top: 2px;
+    }
+
+    /* ── Nav ── */
+    .sidebar-nav { flex: 1; padding: 18px 12px; overflow-y: auto; }
+    .nav-label {
+      font-size: 9.5px; font-weight: 600;
+      letter-spacing: 1.8px; text-transform: uppercase;
+      color: rgba(255,255,255,0.35);
+      padding: 0 10px; margin: 18px 0 7px;
+    }
+    .nav-label:first-child { margin-top: 0; }
+
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 12px; border-radius: var(--r-sm);
+      cursor: pointer; color: rgba(255,255,255,0.65);
+      font-size: 13.5px; font-weight: 400;
+      transition: background 0.15s, color 0.15s;
+      border: none; background: none; width: 100%; text-align: left;
+      position: relative;
+    }
+    .nav-item:hover { background: rgba(255,255,255,0.1); color: #fff; }
+    .nav-item.active {
+      background: rgba(255,255,255,0.18);
+      color: #fff; font-weight: 600;
+    }
+    .nav-item.active::before {
+      content: ''; position: absolute;
+      left: 0; top: 20%; height: 60%; width: 3px;
+      background: #fff; border-radius: 0 3px 3px 0;
+    }
+    .nav-item i { font-size: 14px; width: 17px; text-align: center; flex-shrink: 0; }
+    .ch-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+    /* ── Footer ── */
+    .sidebar-footer {
+      padding: 16px 20px;
+      border-top: 1px solid rgba(255,255,255,0.12);
+    }
+    .user-row { display: flex; align-items: center; gap: 10px; }
+    .avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: rgba(255,255,255,0.2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700; color: #fff; flex-shrink: 0;
+    }
+    .u-name { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.9); }
+    .u-role { font-size: 11px; color: rgba(255,255,255,0.4); }
+
+    /* ═══════════════════════════════════════
+       MAIN + TOPBAR
+    ═══════════════════════════════════════ */
+    .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
+
+    .topbar {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 30px; height: 62px;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .page-title { font-size: 17px; font-weight: 700; letter-spacing: -0.2px; }
+    .topbar-right { display: flex; align-items: center; gap: 9px; }
+
+    /* ═══════════════════════════════════════
+       BUTTONS
+    ═══════════════════════════════════════ */
+    .btn {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 9px 18px; border-radius: var(--r-sm);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 13px; font-weight: 600;
+      cursor: pointer; border: none; transition: all 0.16s;
+      white-space: nowrap;
+    }
+    .btn i { font-size: 13px; }
+    .btn-primary { background: var(--blue); color: #fff; }
+    .btn-primary:hover { background: var(--blue-dark); }
+    .btn-ghost { background: transparent; color: var(--ink2); border: 1.5px solid var(--border); }
+    .btn-ghost:hover { background: var(--surface2); }
+    .btn-ai {
+      background: var(--blue-pale); color: var(--blue);
+      border: 1.5px solid var(--blue-mid);
+    }
+    .btn-ai:hover { background: var(--blue-light); }
+    .btn-sm { padding: 7px 14px; font-size: 12px; }
+
+    /* ═══════════════════════════════════════
+       CONTENT AREA
+    ═══════════════════════════════════════ */
+    .content-area {
+      flex: 1; overflow-y: auto;
+      padding: 26px 30px;
+      background: var(--bg);
+    }
+    .content-area::-webkit-scrollbar { width: 5px; }
+    .content-area::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+
+    /* ═══════════════════════════════════════
+       STAT CARDS
+    ═══════════════════════════════════════ */
+    .stats-row {
+      display: grid; grid-template-columns: repeat(4,1fr);
+      gap: 14px; margin-bottom: 26px;
+    }
+    .stat-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--r); padding: 18px 20px;
+      position: relative; overflow: hidden;
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+    .stat-card:hover { box-shadow: 0 4px 20px rgba(26,111,244,0.1); transform: translateY(-1px); }
+    .stat-card-icon {
+      width: 36px; height: 36px; border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px; margin-bottom: 12px;
+    }
+    .sc-blue   { background: var(--blue-light); color: var(--blue); }
+    .sc-green  { background: var(--green-pale); color: var(--green); }
+    .sc-amber  { background: var(--amber-pale); color: var(--amber); }
+    .sc-violet { background: var(--violet-pale); color: var(--violet); }
+    .stat-value {
+      font-size: 30px; font-weight: 700; color: var(--ink);
+      line-height: 1; margin-bottom: 4px; letter-spacing: -1px;
+    }
+    .stat-label { font-size: 12px; font-weight: 600; color: var(--ink2); }
+    .stat-sub   { font-size: 11px; color: var(--ink3); margin-top: 2px; }
+
+    /* ═══════════════════════════════════════
+       CALENDAR
+    ═══════════════════════════════════════ */
+    .cal-nav {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 18px;
+    }
+    .cal-title { flex: 1; font-size: 18px; font-weight: 700; letter-spacing: -0.3px; }
+    .cal-btn {
+      padding: 8px 16px; border: 1.5px solid var(--border);
+      border-radius: var(--r-sm); background: var(--surface);
+      font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; font-weight: 500;
+      cursor: pointer; color: var(--ink2); transition: all 0.15s;
+    }
+    .cal-btn:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-pale); }
+
+    .calendar-wrap {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--r); overflow: hidden;
+    }
+    .calendar-grid { display: grid; grid-template-columns: repeat(7,1fr); }
+    .cal-header {
+      background: var(--blue); color: rgba(255,255,255,0.85);
+      padding: 10px 12px; font-size: 10.5px; font-weight: 700;
+      letter-spacing: 1px; text-transform: uppercase; text-align: center;
+    }
+    .cal-day {
+      min-height: 94px; padding: 8px 9px;
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      cursor: pointer; transition: background 0.1s; position: relative;
+    }
+    .cal-day:nth-child(7n) { border-right: none; }
+    .cal-day:hover { background: var(--blue-pale); }
+    .cal-day.other-month { background: var(--surface2); }
+    .cal-day.other-month .day-num { color: var(--ink3); opacity: 0.5; }
+    .cal-day.today { background: var(--blue-pale); }
+
+    .day-num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 26px; height: 26px; border-radius: 50%;
+      font-size: 12.5px; font-weight: 500; color: var(--ink2); margin-bottom: 4px;
+    }
+    .cal-day.today .day-num {
+      background: var(--blue); color: #fff; font-weight: 700;
+    }
+    .day-add {
+      position: absolute; top: 7px; right: 8px;
+      font-size: 16px; color: var(--border); cursor: pointer; transition: color 0.15s;
+    }
+    .cal-day:hover .day-add { color: var(--blue); }
+
+    .cal-pill {
+      display: block; font-size: 10.5px; font-weight: 600;
+      padding: 3px 7px; border-radius: 5px; margin-bottom: 3px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      cursor: pointer; transition: opacity 0.15s;
+    }
+    .cal-pill:hover { opacity: 0.78; }
+    .cal-pill.instagram { background: var(--pink-pale); color: var(--pink); }
+    .cal-pill.tiktok    { background: var(--violet-pale); color: var(--violet); }
+    .cal-pill.reels     { background: var(--blue-light); color: var(--blue); }
+    .cal-pill.status-publicado { opacity: 0.45; text-decoration: line-through; }
+
+    /* ═══════════════════════════════════════
+       KANBAN
+    ═══════════════════════════════════════ */
+    .kanban-board { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; align-items: start; }
+
+    .kanban-col {
+      background: var(--surface2); border-radius: var(--r);
+      padding: 14px 12px;
+    }
+    .kanban-col-header {
+      display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;
+    }
+    .col-label { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700; color: var(--ink); }
+    .col-pip { width: 10px; height: 10px; border-radius: 50%; }
+    .col-count {
+      font-size: 11px; color: var(--ink3);
+      background: var(--surface); border: 1px solid var(--border);
+      padding: 2px 8px; border-radius: 10px; font-weight: 600;
+    }
+
+    .kanban-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--r-sm); padding: 13px 14px; margin-bottom: 9px;
+      cursor: pointer; transition: box-shadow 0.18s, transform 0.18s, border-color 0.18s;
+    }
+    .kanban-card:hover { box-shadow: 0 4px 16px rgba(26,111,244,0.12); transform: translateY(-2px); border-color: var(--blue-mid); }
+    .kanban-card:last-child { margin-bottom: 0; }
+
+    .card-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 10.5px; font-weight: 700;
+      padding: 3px 8px; border-radius: 5px; margin-bottom: 9px;
+    }
+    .card-badge.instagram { background: var(--pink-pale); color: var(--pink); }
+    .card-badge.tiktok    { background: var(--violet-pale); color: var(--violet); }
+    .card-badge.reels     { background: var(--blue-light); color: var(--blue); }
+
+    .card-title { font-size: 13px; font-weight: 600; line-height: 1.4; color: var(--ink); margin-bottom: 10px; }
+    .card-footer { display: flex; align-items: center; justify-content: space-between; }
+    .card-date { font-size: 11px; color: var(--ink3); }
+    .card-prio { font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 4px; letter-spacing: 0.2px; }
+    .prio-alta  { background: var(--red-pale); color: var(--red); }
+    .prio-media { background: var(--amber-pale); color: var(--amber); }
+    .prio-baja  { background: var(--green-pale); color: var(--green); }
+
+    .add-card-btn {
+      width: 100%; margin-top: 9px; padding: 10px;
+      border: 1.5px dashed var(--border); border-radius: var(--r-sm);
+      background: none; cursor: pointer;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 12.5px; font-weight: 500; color: var(--ink3);
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      transition: all 0.15s;
+    }
+    .add-card-btn:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-pale); }
+
+    /* ═══════════════════════════════════════
+       IDEAS / AI
+    ═══════════════════════════════════════ */
+    .ideas-wrap { max-width: 960px; }
+
+    .ai-box {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--r); padding: 24px; margin-bottom: 26px;
+      position: relative; overflow: hidden;
+    }
+    .ai-box::before {
+      content: ''; position: absolute;
+      top: 0; left: 0; right: 0; height: 3px;
+      background: var(--blue);
+    }
+    .ai-box-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+    .ai-icon {
+      width: 38px; height: 38px; border-radius: 10px;
+      background: var(--blue); color: #fff;
+      display: flex; align-items: center; justify-content: center; font-size: 16px;
+    }
+    .ai-title { font-size: 16px; font-weight: 700; }
+    .ai-tag {
+      margin-left: auto; font-size: 10px; font-weight: 700;
+      letter-spacing: 1.2px; text-transform: uppercase;
+      background: var(--blue-light); color: var(--blue);
+      border: 1px solid var(--blue-mid); padding: 4px 10px; border-radius: 20px;
+    }
+
+    .ai-input-row { display: flex; gap: 10px; }
+    .ai-input-row input {
+      flex: 1; padding: 11px 15px;
+      border: 1.5px solid var(--border); border-radius: var(--r-sm);
+      font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px;
+      background: var(--bg); color: var(--ink);
+      outline: none; transition: border-color 0.15s, background 0.15s;
+    }
+    .ai-input-row input:focus { border-color: var(--blue); background: var(--surface); }
+    .ai-input-row input::placeholder { color: var(--ink3); }
+
+    .ai-chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+    .ai-chip {
+      padding: 6px 14px; border-radius: 20px;
+      border: 1.5px solid var(--border); background: var(--bg);
+      font-size: 12px; font-weight: 500; cursor: pointer; color: var(--ink2);
+      font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.15s;
+    }
+    .ai-chip:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-pale); }
+
+    .section-head { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+    .section-head h3 { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--ink3); white-space: nowrap; }
+    .section-line { flex: 1; height: 1px; background: var(--border); }
+
+    .ideas-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(270px,1fr)); gap: 13px; }
+
+    .idea-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--r); padding: 18px;
+      transition: box-shadow 0.18s, transform 0.18s;
+    }
+    .idea-card:hover { box-shadow: 0 4px 18px rgba(26,111,244,0.1); transform: translateY(-2px); }
+    .idea-card.ai-gen { border-top: 3px solid var(--blue); }
+
+    .idea-ch {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 10.5px; font-weight: 700;
+      padding: 3px 8px; border-radius: 5px; margin-bottom: 10px;
+    }
+    .idea-ch.instagram { background: var(--pink-pale); color: var(--pink); }
+    .idea-ch.tiktok    { background: var(--violet-pale); color: var(--violet); }
+    .idea-ch.reels     { background: var(--blue-light); color: var(--blue); }
+
+    .idea-title { font-size: 14px; font-weight: 600; line-height: 1.4; margin-bottom: 7px; }
+    .idea-desc  { font-size: 12.5px; color: var(--ink2); line-height: 1.55; margin-bottom: 10px; }
+    .idea-meta  {
+      font-size: 11.5px; color: var(--ink3); background: var(--surface2);
+      border-radius: 6px; padding: 8px 10px; margin-bottom: 12px; line-height: 1.7;
+    }
+    .idea-meta strong { color: var(--ink2); }
+    .idea-actions { display: flex; gap: 8px; }
+    .idea-btn {
+      flex: 1; padding: 7px; border-radius: var(--r-sm);
+      border: 1.5px solid var(--border); background: none;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 12px; font-weight: 500;
+      cursor: pointer; color: var(--ink2); transition: all 0.15s;
+    }
+    .idea-btn.go:hover  { background: var(--blue); border-color: var(--blue); color: #fff; }
+    .idea-btn.del:hover { background: var(--red-pale); border-color: var(--red); color: var(--red); }
+
+    .ai-loading {
+      display: flex; align-items: center; gap: 14px; margin-bottom: 20px;
+      padding: 18px 22px; background: var(--blue-pale);
+      border: 1px solid var(--blue-mid); border-radius: var(--r);
+      font-size: 14px; font-weight: 500; color: var(--blue);
+    }
+    .spinner {
+      width: 20px; height: 20px; flex-shrink: 0;
+      border: 2.5px solid var(--blue-mid); border-top-color: var(--blue);
+      border-radius: 50%; animation: spin 0.75s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .error-box {
+      background: var(--red-pale); border: 1px solid #fca5a5;
+      border-radius: var(--r-sm); padding: 12px 16px;
+      font-size: 13px; color: var(--red); margin-bottom: 20px; font-weight: 500;
+    }
+
+    /* ═══════════════════════════════════════
+       MODAL
+    ═══════════════════════════════════════ */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(10,20,40,0.5);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 200; opacity: 0; pointer-events: none;
+      transition: opacity 0.2s; backdrop-filter: blur(3px);
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .modal {
+      background: var(--surface); border-radius: var(--r-lg);
+      padding: 30px; width: 520px;
+      max-width: 96vw; max-height: 92vh; overflow-y: auto;
+      transform: translateY(14px) scale(0.97);
+      transition: transform 0.2s;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+    }
+    .modal-overlay.open .modal { transform: translateY(0) scale(1); }
+
+    .modal-header {
+      display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px;
+    }
+    .modal-title { font-size: 19px; font-weight: 700; letter-spacing: -0.3px; }
+    .modal-close {
+      width: 32px; height: 32px; border-radius: 8px;
+      background: var(--surface2); border: none; cursor: pointer;
+      color: var(--ink2); font-size: 14px;
+      display: flex; align-items: center; justify-content: center; transition: background 0.15s;
+    }
+    .modal-close:hover { background: var(--border); }
+
+    .form-group { margin-bottom: 15px; }
+    .form-label {
+      display: block; font-size: 11px; font-weight: 700;
+      letter-spacing: 0.7px; text-transform: uppercase;
+      color: var(--ink2); margin-bottom: 7px;
+    }
+    .form-input {
+      width: 100%; padding: 10px 14px;
+      border: 1.5px solid var(--border); border-radius: var(--r-sm);
+      font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px;
+      background: var(--bg); color: var(--ink);
+      outline: none; transition: border-color 0.15s, background 0.15s;
+      appearance: none;
+    }
+    .form-input:focus { border-color: var(--blue); background: var(--surface); }
+    textarea.form-input { resize: vertical; min-height: 76px; }
+    select.form-input {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 13px center; padding-right: 34px;
+    }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 13px; }
+    .modal-footer {
+      display: flex; gap: 10px; justify-content: flex-end;
+      margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--border);
+    }
+
+    @keyframes fadeUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+    .content-area > * { animation: fadeUp 0.2s ease both; }
+  </style>
+
+<style id="upgrade-styles">
+.competitor-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px}
+.competitor-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px;transition:.2s;box-shadow:0 8px 30px rgba(26,111,244,.06)}
+.competitor-card:hover{transform:translateY(-3px);box-shadow:0 14px 40px rgba(26,111,244,.12)}
+.comp-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.comp-name{font-size:18px;font-weight:700;color:var(--blue-deep)}
+.comp-badge{padding:5px 10px;border-radius:999px;background:var(--blue-light);color:var(--blue);font-size:11px;font-weight:700}
+.metric{margin-bottom:14px}
+.metric-row{display:flex;justify-content:space-between;margin-bottom:6px;font-size:12px;color:var(--ink2)}
+.metric-bar{height:10px;background:var(--surface2);border-radius:999px;overflow:hidden}
+.metric-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--blue),#60a5fa)}
+.comp-insight{margin-top:14px;padding:14px;background:var(--blue-pale);border-radius:12px;font-size:12px;line-height:1.6;color:var(--ink2)}
+.quick-actions{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:24px}
+.quick-card{background:linear-gradient(135deg,#fff,#f7fbff);border:1px solid var(--border);border-radius:var(--r);padding:18px;display:flex;gap:14px;align-items:center;transition:.2s}
+.quick-card:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(26,111,244,.08)}
+.quick-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:var(--blue-light);color:var(--blue);font-size:18px}
+.quick-title{font-size:13px;font-weight:700}
+.quick-sub{font-size:11px;color:var(--ink3)}
+.topbar{backdrop-filter:blur(10px)}
+.calendar-wrap,.ai-box,.idea-card,.kanban-card,.modal{box-shadow:0 10px 40px rgba(26,111,244,.05)}
+</style>
+
+</head>
+<body>
+<div class="app">
+
+  <!-- ════ SIDEBAR ════ -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-drop">💧</div>
+      <div class="logo-text-wrap">
+        <div class="logo-name">Clean it</div>
+        <div class="logo-sub">Content Hub</div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-label">Vistas</div>
+      <button class="nav-item active" onclick="switchView('calendario')">
+        <i class="fa-regular fa-calendar-days"></i> Calendario
+      </button>
+      <button class="nav-item" onclick="switchView('kanban')">
+        <i class="fa-solid fa-table-columns"></i> Tablero Kanban
+      </button>
+      <button class="nav-item" onclick="switchView('ideas')">
+        <i class="fa-solid fa-lightbulb"></i> Ideas con IA
+      </button>
+      <button class="nav-item" onclick="switchView('competencia')">
+        <i class="fa-solid fa-chart-line"></i> Competencia
+      </button>
+
+      <div class="nav-label">Canales</div>
+      <button class="nav-item" onclick="filterChannel(null)">
+        <i class="fa-solid fa-layer-group"></i> Todos
+      </button>
+      <button class="nav-item" onclick="filterChannel('instagram')">
+        <div class="ch-dot" style="background:#f472b6"></div> Instagram
+      </button>
+      <button class="nav-item" onclick="filterChannel('tiktok')">
+        <div class="ch-dot" style="background:#a78bfa"></div> TikTok
+      </button>
+      <button class="nav-item" onclick="filterChannel('reels')">
+        <div class="ch-dot" style="background:#60a5fa"></div> Reels
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-row">
+        <div class="avatar">CI</div>
+        <div>
+          <div class="u-name">Clean It</div>
+          <div class="u-role">Head de Contenido</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ════ MAIN ════ -->
+  <div class="main">
+    <div class="topbar">
+      <span class="page-title" id="view-title">Calendario de Contenido</span>
+      <div class="topbar-right">
+        <button class="btn btn-ai btn-sm" onclick="switchView('ideas')">
+          <i class="fa-solid fa-wand-magic-sparkles"></i> Generar ideas
+        </button>
+        <button class="btn btn-primary btn-sm" onclick="openModal()">
+          <i class="fa-solid fa-plus"></i> Nuevo contenido
+        </button>
+      </div>
+    </div>
+    <div class="content-area" id="content-area"></div>
+  </div>
+</div>
+
+<!-- ════ MODAL ════ -->
+<div class="modal-overlay" id="modal" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-title">Nuevo contenido</div>
+      <button class="modal-close" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Título</label>
+      <input class="form-input" id="f-title" type="text" placeholder="Ej: Limpieza de primavera en 5 pasos" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">Descripción / Concepto</label>
+      <textarea class="form-input" id="f-desc" placeholder="El gancho, el formato, el CTA..."></textarea>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Canal</label>
+        <select class="form-input" id="f-channel">
+          <option value="instagram">📸 Instagram</option>
+          <option value="tiktok">🎵 TikTok</option>
+          <option value="reels">🎬 Reels</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Estado</label>
+        <select class="form-input" id="f-status">
+          <option value="idea">💡 Idea</option>
+          <option value="produccion">🎬 En producción</option>
+          <option value="revision">👁 En revisión</option>
+          <option value="publicado">✅ Publicado</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Fecha</label>
+        <input class="form-input" id="f-date" type="date" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Prioridad</label>
+        <select class="form-input" id="f-priority">
+          <option value="alta">🔴 Alta</option>
+          <option value="media">🟡 Media</option>
+          <option value="baja">🟢 Baja</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Hashtags / Notas</label>
+      <input class="form-input" id="f-tags" type="text" placeholder="#limpieza #hogar #tips" />
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveContent()"><i class="fa-solid fa-check"></i> Guardar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentView = 'calendario';
+let currentMonth = new Date().getMonth();
+let currentYear  = new Date().getFullYear();
+let channelFilter = null;
+let editingId = null;
+let contents = loadData();
+
+function loadData() {
+  try { const r = localStorage.getItem('cleanit_v3'); return r ? JSON.parse(r) : seed(); }
+  catch { return seed(); }
+}
+function persist() { try { localStorage.setItem('cleanit_v3', JSON.stringify(contents)); } catch {} }
+
+function seed() {
+  const t = new Date(), y = t.getFullYear(), m = String(t.getMonth()+1).padStart(2,'0');
+  return [
+    {id:1,title:'5 trucos de limpieza que no conocías',desc:'Reel dinámico con tips rápidos. Gancho: "Tu casa nunca estuvo tan limpia"',channel:'reels',status:'publicado',date:`${y}-${m}-03`,priority:'alta',tags:'#limpieza #hogar'},
+    {id:2,title:'Antes y después de una limpieza profunda',desc:'Carousel Instagram con fotos de transformación real de cliente',channel:'instagram',status:'publicado',date:`${y}-${m}-07`,priority:'alta',tags:'#antesydespues'},
+    {id:3,title:'POV: contratas Clean It por primera vez',desc:'Video TikTok desde la perspectiva del cliente',channel:'tiktok',status:'revision',date:`${y}-${m}-14`,priority:'media',tags:'#pov #cleanit'},
+    {id:4,title:'Cómo elegir un servicio de limpieza',desc:'Guía informativa en carrusel para posicionarnos como expertos',channel:'instagram',status:'produccion',date:`${y}-${m}-18`,priority:'media',tags:'#consejos'},
+    {id:5,title:'Detrás de escena de nuestro equipo',desc:'Un día con nuestros limpiadores — humanizar la marca',channel:'reels',status:'produccion',date:`${y}-${m}-21`,priority:'baja',tags:'#behindthescenes'},
+    {id:6,title:'La trampa de los productos baratos',desc:'TikTok educativo: por qué los productos premium valen la pena',channel:'tiktok',status:'idea',date:`${y}-${m}-25`,priority:'media',tags:'#calidad'},
+    {id:7,title:'Limpieza express para visitas inesperadas',desc:'60 segundos de tips ultra rápidos — alto potencial viral',channel:'reels',status:'idea',date:`${y}-${m}-28`,priority:'alta',tags:'#viral'},
+  ];
+}
+
+// ── NAV ──────────────────────────────────────────────────
+const TITLES = {calendario:'Calendario de Contenido', kanban:'Tablero Kanban', ideas:'Ideas con IA', competencia:'Análisis de Competencia'};
+function switchView(v) {
+  currentView = v;
+  document.getElementById('view-title').textContent = TITLES[v];
+  document.querySelectorAll('.nav-item').forEach((el,i) =>
+    el.classList.toggle('active', i === ['calendario','kanban','ideas','competencia'].indexOf(v)));
+  render();
+}
+function filterChannel(ch) { channelFilter = ch; render(); }
+function render() {
+  const ca = document.getElementById('content-area');
+  if (currentView==='calendario') ca.innerHTML = renderCalendar();
+  else if (currentView==='kanban') ca.innerHTML = renderKanban();
+  else if (currentView==='ideas') ca.innerHTML = renderIdeas();
+  else ca.innerHTML = renderCompetencia();
+}
+
+// ── HELPERS ──────────────────────────────────────────────
+const MONTHS = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+const DAYS   = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+function icon(ch) { return ch==='instagram'?'📸':ch==='tiktok'?'🎵':'🎬'; }
+function fmt(d)   { if(!d) return 'Sin fecha'; const [,m,dd]=d.split('-'); return `${dd}/${m}`; }
+function fil()    { return channelFilter ? contents.filter(c=>c.channel===channelFilter) : contents; }
+
+// ── CALENDAR ─────────────────────────────────────────────
+function renderCalendar() {
+  const f = fil(), y = currentYear, mo = currentMonth;
+  const pfx = String(mo+1).padStart(2,'0');
+  const today = new Date();
+  const thisM = f.filter(c=>c.date&&c.date.startsWith(`${y}-${pfx}`));
+
+  const stats = `<div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-card-icon sc-blue"><i class="fa-regular fa-calendar"></i></div>
+      <div class="stat-value">${thisM.length}</div>
+      <div class="stat-label">Este mes</div>
+      <div class="stat-sub">piezas planificadas</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-icon sc-green"><i class="fa-solid fa-circle-check"></i></div>
+      <div class="stat-value">${f.filter(c=>c.status==='publicado').length}</div>
+      <div class="stat-label">Publicados</div>
+      <div class="stat-sub">en total</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-icon sc-amber"><i class="fa-solid fa-film"></i></div>
+      <div class="stat-value">${f.filter(c=>c.status==='produccion'||c.status==='revision').length}</div>
+      <div class="stat-label">En proceso</div>
+      <div class="stat-sub">producción + revisión</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-icon sc-violet"><i class="fa-solid fa-lightbulb"></i></div>
+      <div class="stat-value">${f.filter(c=>c.status==='idea').length}</div>
+      <div class="stat-label">Ideas</div>
+      <div class="stat-sub">por trabajar</div>
+    </div>
+  </div>`;
+
+  const firstDay = new Date(y,mo,1).getDay();
+  const dim = new Date(y,mo+1,0).getDate();
+  const prevMax = new Date(y,mo,0).getDate();
+
+  let days = DAYS.map(d=>`<div class="cal-header">${d}</div>`).join('');
+  for(let i=firstDay-1;i>=0;i--) days+=`<div class="cal-day other-month"><div class="day-num">${prevMax-i}</div></div>`;
+  for(let d=1;d<=dim;d++){
+    const isTod = d===today.getDate()&&mo===today.getMonth()&&y===today.getFullYear();
+    const ds = `${y}-${pfx}-${String(d).padStart(2,'0')}`;
+    const pills = f.filter(c=>c.date===ds).map(c=>`<span class="cal-pill ${c.channel} status-${c.status}" onclick="editContent(${c.id})" title="${c.title}">${icon(c.channel)} ${c.title}</span>`).join('');
+    days+=`<div class="cal-day${isTod?' today':''}"><div class="day-num">${d}</div><span class="day-add" onclick="openModalWithDate('${ds}')">+</span>${pills}</div>`;
+  }
+  const rem=(firstDay+dim)%7;
+  for(let i=1;i<=(rem?7-rem:0);i++) days+=`<div class="cal-day other-month"><div class="day-num">${i}</div></div>`;
+
+  return `${stats}
+  <div class="cal-nav">
+    <div class="cal-title">${MONTHS[mo]} ${y}</div>
+    <button class="cal-btn" onclick="prevMonth()">← Anterior</button>
+    <button class="cal-btn" onclick="nextMonth()">Siguiente →</button>
+  </div>
+  <div class="calendar-wrap"><div class="calendar-grid">${days}</div></div>`;
+}
+function prevMonth(){ currentMonth===0?(currentMonth=11,currentYear--):currentMonth--; render(); }
+function nextMonth(){ currentMonth===11?(currentMonth=0,currentYear++):currentMonth++; render(); }
+
+// ── KANBAN ────────────────────────────────────────────────
+const COLS=[
+  {key:'idea',label:'Ideas',pip:'#d97706'},
+  {key:'produccion',label:'En producción',pip:'#1a6ff4'},
+  {key:'revision',label:'En revisión',pip:'#7c3aed'},
+  {key:'publicado',label:'Publicado',pip:'#16a34a'},
+];
+function renderKanban(){
+  const f=fil();
+  return `<div class="kanban-board">${COLS.map(col=>{
+    const cards=f.filter(c=>c.status===col.key);
+    return `<div class="kanban-col">
+      <div class="kanban-col-header">
+        <div class="col-label"><div class="col-pip" style="background:${col.pip}"></div>${col.label}</div>
+        <div class="col-count">${cards.length}</div>
+      </div>
+      ${cards.map(c=>`<div class="kanban-card" onclick="editContent(${c.id})">
+        <div class="card-badge ${c.channel}">${icon(c.channel)} ${c.channel.charAt(0).toUpperCase()+c.channel.slice(1)}</div>
+        <div class="card-title">${c.title}</div>
+        <div class="card-footer">
+          <div class="card-date"><i class="fa-regular fa-calendar" style="margin-right:4px"></i>${fmt(c.date)}</div>
+          <div class="card-prio prio-${c.priority}">${c.priority.toUpperCase()}</div>
+        </div>
+      </div>`).join('')}
+      <button class="add-card-btn" onclick="openModalWithStatus('${col.key}')"><i class="fa-solid fa-plus"></i> Agregar</button>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+// ── IDEAS / AI ────────────────────────────────────────────
+const PROMPTS=['Ideas virales para verano','Contenido educativo','Campañas estacionales','Tips para oficinas','Antes y después'];
+function renderIdeas(){
+  const ideas=contents.filter(c=>c.status==='idea');
+  return `<div class="ideas-wrap">
+    <div class="ai-box">
+      <div class="ai-box-header">
+        <div class="ai-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+        <div class="ai-title">Generador de ideas</div>
+        <div class="ai-tag">IA activa</div>
+      </div>
+      <div class="ai-input-row">
+        <input id="ai-input" type="text" placeholder="Ej: ideas para Instagram sobre limpieza de verano…" />
+        <button class="btn btn-primary" onclick="generateIdeas()"><i class="fa-solid fa-paper-plane"></i> Generar</button>
+      </div>
+      <div class="ai-chips">${PROMPTS.map(p=>`<div class="ai-chip" onclick="prefill('${p}')">${p}</div>`).join('')}</div>
+    </div>
+    <div id="ai-output"></div>
+    <div class="section-head"><h3>Ideas guardadas (${ideas.length})</h3><div class="section-line"></div></div>
+    ${ideas.length ? `<div class="ideas-grid">${ideas.map(c=>`
+      <div class="idea-card">
+        <div class="idea-ch ${c.channel}">${icon(c.channel)} ${c.channel}</div>
+        <div class="idea-title">${c.title}</div>
+        <div class="idea-desc">${c.desc||''}</div>
+        <div class="idea-actions">
+          <button class="idea-btn go" onclick="moveToProd(${c.id})">→ Producción</button>
+          <button class="idea-btn del" onclick="delContent(${c.id})">Eliminar</button>
+        </div>
+      </div>`).join('')}</div>`
+    :`<p style="color:var(--ink3);font-size:13px;padding:16px 0">No hay ideas guardadas. ¡Generá algunas con la IA!</p>`}
+  </div>`;
+}
+
+function prefill(t){ document.getElementById('ai-input').value=t; }
+
+async function generateIdeas(){
+  const input=document.getElementById('ai-input').value.trim();
+  if(!input) return;
+  const out=document.getElementById('ai-output');
+  out.innerHTML=`<div class="ai-loading"><div class="spinner"></div>Clean It IA generando ideas…</div>`;
+  try {
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514', max_tokens:1000,
+        system:`Sos experta en marketing de contenido para empresas de limpieza en Argentina. La empresa es "Clean It". Generás ideas para Instagram, TikTok y Reels. Devolvé SOLO JSON válido sin markdown: {"ideas":[{"titulo":"...","descripcion":"...","canal":"instagram|tiktok|reels","gancho":"...","formato":"..."}]}. Generá exactamente 4 ideas con alto potencial viral.`,
+        messages:[{role:'user',content:`Generá ideas de contenido para: ${input}`}]
+      })
+    });
+    const data=await res.json();
+    let raw=data.content.map(i=>i.text||'').join('').replace(/```json|```/g,'').trim();
+    showAIIdeas(JSON.parse(raw).ideas);
+  } catch(e) {
+    out.innerHTML=`<div class="error-box"><i class="fa-solid fa-triangle-exclamation"></i> Error al conectar con la IA.</div>`;
+  }
+}
+
+function showAIIdeas(ideas){
+  window._ai=ideas;
+  document.getElementById('ai-output').innerHTML=`<div style="margin-bottom:24px">
+    <div class="section-head" style="margin-bottom:14px"><h3>✨ ${ideas.length} ideas generadas</h3><div class="section-line"></div></div>
+    <div class="ideas-grid">${ideas.map((idea,i)=>`
+      <div class="idea-card ai-gen">
+        <div class="idea-ch ${idea.canal}">${icon(idea.canal)} ${idea.canal}</div>
+        <div class="idea-title">${idea.titulo}</div>
+        <div class="idea-desc">${idea.descripcion}</div>
+        <div class="idea-meta"><strong>Gancho:</strong> ${idea.gancho}<br><strong>Formato:</strong> ${idea.formato}</div>
+        <div class="idea-actions">
+          <button class="idea-btn go" onclick="saveAI(${i})">💾 Guardar</button>
+          <button class="idea-btn go" onclick="aiToProd(${i})">→ Producción</button>
+        </div>
+      </div>`).join('')}
+    </div>
+  </div>`;
+}
+
+function saveAI(i){const x=window._ai[i];contents.push({id:Date.now(),title:x.titulo,desc:`${x.descripcion} | Gancho: ${x.gancho}`,channel:x.canal,status:'idea',date:'',priority:'media',tags:''});persist();alert('✅ Guardado');render();}
+function aiToProd(i){const x=window._ai[i];contents.push({id:Date.now(),title:x.titulo,desc:x.descripcion,channel:x.canal,status:'produccion',date:'',priority:'media',tags:''});persist();alert('✅ Movido a producción');render();}
+function moveToProd(id){const c=contents.find(x=>x.id===id);if(c){c.status='produccion';persist();render();}}
+function delContent(id){if(confirm('¿Eliminar?')){contents=contents.filter(x=>x.id!==id);persist();render();}}
+
+
+function renderCompetencia(){
+const comps=[
+{name:'Spark Clean',platform:'Instagram',eng:88,freq:72,creative:91,insight:'Usan antes/después y reels con hooks rápidos.'},
+{name:'Blue Home',platform:'TikTok',eng:75,freq:95,creative:68,insight:'Suben contenido diario pero sin branding sólido.'},
+{name:'Urban Wash',platform:'Reels',eng:92,freq:65,creative:87,insight:'Tienen contenido muy cinematográfico y humano.'}
+];
+
+return `
+<div class="stats-row">
+<div class="stat-card"><div class="stat-card-icon sc-blue"><i class="fa-solid fa-users"></i></div><div class="stat-value">3</div><div class="stat-label">Competidores</div><div class="stat-sub">analizados</div></div>
+<div class="stat-card"><div class="stat-card-icon sc-violet"><i class="fa-solid fa-fire"></i></div><div class="stat-value">Reels</div><div class="stat-label">Formato viral</div><div class="stat-sub">más usado</div></div>
+<div class="stat-card"><div class="stat-card-icon sc-green"><i class="fa-solid fa-arrow-trend-up"></i></div><div class="stat-value">+34%</div><div class="stat-label">Engagement</div><div class="stat-sub">promedio</div></div>
+<div class="stat-card"><div class="stat-card-icon sc-amber"><i class="fa-solid fa-lightbulb"></i></div><div class="stat-value">Alta</div><div class="stat-label">Oportunidad</div><div class="stat-sub">branding visual</div></div>
+</div>
+
+<div class="competitor-grid">
+${comps.map(c=>`
+<div class="competitor-card">
+<div class="comp-top">
+<div class="comp-name">${c.name}</div>
+<div class="comp-badge">${c.platform}</div>
+</div>
+
+<div class="metric">
+<div class="metric-row"><span>Engagement</span><strong>${c.eng}%</strong></div>
+<div class="metric-bar"><div class="metric-fill" style="width:${c.eng}%"></div></div>
+</div>
+
+<div class="metric">
+<div class="metric-row"><span>Frecuencia</span><strong>${c.freq}%</strong></div>
+<div class="metric-bar"><div class="metric-fill" style="width:${c.freq}%"></div></div>
+</div>
+
+<div class="metric">
+<div class="metric-row"><span>Creatividad</span><strong>${c.creative}%</strong></div>
+<div class="metric-bar"><div class="metric-fill" style="width:${c.creative}%"></div></div>
+</div>
+
+<div class="comp-insight">💡 ${c.insight}</div>
+</div>`).join('')}
+</div>`;
+}
+
+// ── MODAL ─────────────────────────────────────────────────
+function openModal(date,status){
+  editingId=null;
+  document.getElementById('modal-title').textContent='Nuevo contenido';
+  ['f-title','f-desc','f-tags'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('f-channel').value='instagram';
+  document.getElementById('f-status').value=status||'idea';
+  document.getElementById('f-date').value=date||'';
+  document.getElementById('f-priority').value='media';
+  document.getElementById('modal').classList.add('open');
+}
+function openModalWithDate(d){openModal(d,null);}
+function openModalWithStatus(s){openModal('',s);}
+function editContent(id){
+  const c=contents.find(x=>x.id===id);if(!c)return;
+  editingId=id;
+  document.getElementById('modal-title').textContent='Editar contenido';
+  document.getElementById('f-title').value=c.title;
+  document.getElementById('f-desc').value=c.desc||'';
+  document.getElementById('f-channel').value=c.channel;
+  document.getElementById('f-status').value=c.status;
+  document.getElementById('f-date').value=c.date||'';
+  document.getElementById('f-priority').value=c.priority||'media';
+  document.getElementById('f-tags').value=c.tags||'';
+  document.getElementById('modal').classList.add('open');
+}
+function closeModal(e){
+  if(e&&!e.target.classList.contains('modal-overlay'))return;
+  document.getElementById('modal').classList.remove('open');editingId=null;
+}
+function saveContent(){
+  const title=document.getElementById('f-title').value.trim();
+  if(!title){alert('El título es obligatorio');return;}
+  const item={
+    id:editingId||Date.now(), title,
+    desc:document.getElementById('f-desc').value,
+    channel:document.getElementById('f-channel').value,
+    status:document.getElementById('f-status').value,
+    date:document.getElementById('f-date').value,
+    priority:document.getElementById('f-priority').value,
+    tags:document.getElementById('f-tags').value,
+  };
+  if(editingId){const idx=contents.findIndex(x=>x.id===editingId);contents[idx]=item;}
+  else contents.push(item);
+  persist();document.getElementById('modal').classList.remove('open');render();
+}
+
+render();
+</script>
+</body>
+</html>
