@@ -1,101 +1,40 @@
-# Ribera Content Hub — Final operativo
+# Ribera Content Hub — Final 104
 
-Versión final de trabajo con Supabase, roles/RLS, calendario operativo y flujo de producción por contenido.
+Versión operativa con Supabase, roles/RLS, calendario, biblioteca, entregables, comentarios, assets asociados, checklist de producción, múltiples canales/tipos y flujo correcto de aprobación.
 
-## Qué incluye
+## Subir a GitHub Pages
 
-- Login con Supabase Auth.
-- Empresas/clientes compartidos.
-- Roles y permisos por empresa.
-- Ribera Audiovisual con acceso especial para `ribera.audiovisuales@gmail.com`.
-- Calendario operativo con click en día para crear contenido.
-- Fijación de contenido por rango de fechas.
-- Estados visuales: idea, producción, revisión/edición, terminado y deadline interno.
-- Checklist de producción por contenido.
-- Campo “Qué se va a usar”.
-- Asociación de assets de biblioteca a contenidos.
-- Vista de assets asociados al abrir un contenido.
-- Comentarios internos por contenido.
-- Dashboard interno de Ribera.
-- Alertas visuales dentro del hub.
-- Corrección del bug de regreso al selector al cambiar de pestaña del navegador.
-
-## Archivos a subir a GitHub Pages
-
-Subí estos archivos:
+Subir estos archivos:
 
 - `index.html`
 - `app.js`
 - `styles.css`
 - `ribera-logo.png`
-- tu `config.js` actual
+- `config.js` solamente si todavía no existe en tu repositorio.
 
-No pises `config.js` si ya funciona.
+No pises tu `config.js` si ya está funcionando con tu URL y anon key de Supabase.
 
-## Migraciones necesarias en Supabase
+## Supabase
 
-Ejecutar en este orden, según lo que ya tengas cargado:
+Ejecutar en SQL Editor la migración nueva:
 
-1. `migration_roles_rls.sql`
-2. `migration_calendar_ranges.sql`
-3. `migration_final_operativo.sql`
+- `migration_final_104_cliente_aprueba_ribera_publica.sql`
 
-Si ya ejecutaste las dos primeras, solo ejecutá:
+Si venís de versiones anteriores y ya ejecutaste todas las migraciones previas, con esta alcanza.
 
-```sql
-migration_final_operativo.sql
-```
+## Cambio clave de esta versión
 
-## Verificación rápida
+La aprobación del cliente no cambia automáticamente el estado a `Publicado`.
 
-Después de subir:
+Flujo correcto:
 
-1. Abrí la web con `?v=final` al final de la URL.
-2. Entrá con `ribera.audiovisuales@gmail.com`.
-3. Entrá a Ribera Audiovisual.
-4. Abrí un contenido y verificá:
-   - Checklist de producción.
-   - Qué se va a usar.
-   - Assets asociados.
-   - Comentarios.
-5. Cambiá a otra pestaña del navegador y volvé: no debería enviarte al selector de empresa.
+1. Idea aprobada por cliente → pasa a producción.
+2. Producción → pasa a edición/revisión.
+3. Cliente aprueba la pieza → queda marcada como aprobada.
+4. Ribera marca manualmente el contenido como publicado.
 
-## Nota operativa
+## Cache
 
-Los assets asociados se toman desde Biblioteca. Para ver imágenes de referencia dentro del contenido, cargá primero el asset como Foto/Referencia con un link directo a imagen o archivo visual accesible.
+Abrir con:
 
-## Versión final 100% — multicanal y fases
-
-Además de las migraciones anteriores, ejecutar:
-
-`migration_final_100_multicanal_fases.sql`
-
-Agrega:
-
-- múltiples canales por contenido (`channels`),
-- múltiples tipos de contenido (`content_types`),
-- agenda de tiempo de idea,
-- agenda de tiempo de producción,
-- agenda de tiempo de edición/revisión.
-
-El calendario muestra estas fases como bloques visuales independientes de la fijación/publicación.
-
-
-## Final 101 - Hardfix multicanal y fases
-
-Subir a GitHub Pages:
-
-- `index.html`
-- `app.js`
-- `styles.css`
-- `ribera-logo.png`
-
-No pisar `config.js`.
-
-Ejecutar en Supabase SQL Editor:
-
-- `migration_final_101_repair.sql`
-
-Esta migración consolida checklist, recursos a usar, assets asociados, comentarios, múltiples canales, múltiples tipos y fechas por fase: idea, producción, edición/revisión.
-
-Abrir la web con `?v=final101` para evitar caché viejo de GitHub Pages. En Config debe aparecer el build `final-101-hardfix-multicanal-fases-operativo-202605`.
+`?v=final104`
