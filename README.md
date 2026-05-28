@@ -1,56 +1,40 @@
-# Ribera Content Hub — versión cliente plan final
+# Ribera Content Hub — Final 104
 
-Build: `cliente-plan-final-202605`
+Versión operativa con Supabase, roles/RLS, calendario, biblioteca, entregables, comentarios, assets asociados, checklist de producción, múltiples canales/tipos y flujo correcto de aprobación.
 
-## Qué incluye
+## Subir a GitHub Pages
 
-- Roles, usuarios y permisos por empresa.
-- RLS robusto en Supabase.
-- Calendario operativo con click en día para crear contenido.
-- Fases por contenido: idea, producción, edición/revisión y fijación/publicación.
-- Múltiples canales por contenido.
-- Múltiples tipos por contenido.
-- Ficha visual de contenido orientada a cliente.
-- Línea visual de estado del contenido.
-- Entregables por versión con reproductor embebido cuando el link lo permite.
-- Assets asociados desde Biblioteca.
-- Comentarios por contenido.
-- Lista mensual debajo del calendario.
-- Kanban filtrable por mes y tipo.
-
-## Archivos a subir a GitHub Pages
-
-Subir:
+Subir estos archivos:
 
 - `index.html`
 - `app.js`
 - `styles.css`
 - `ribera-logo.png`
+- `config.js` solamente si todavía no existe en tu repositorio.
 
-No pisar:
+No pises tu `config.js` si ya está funcionando con tu URL y anon key de Supabase.
 
-- `config.js`
+## Supabase
 
-## SQL requerido
+Ejecutar en SQL Editor la migración nueva:
 
-Ejecutar en Supabase SQL Editor:
+- `migration_final_104_cliente_aprueba_ribera_publica.sql`
 
-1. `migration_roles_rls.sql`, si todavía no lo ejecutaste.
-2. `migration_cliente_plan_final.sql`.
+Si venís de versiones anteriores y ya ejecutaste todas las migraciones previas, con esta alcanza.
 
-Después abrir la web con:
+## Cambio clave de esta versión
 
-```text
-?v=cliente-plan-final
-```
+La aprobación del cliente no cambia automáticamente el estado a `Publicado`.
 
-## Nota sobre reproductor
+Flujo correcto:
 
-Los entregables se reproducen dentro del hub cuando el link lo permite:
+1. Idea aprobada por cliente → pasa a producción.
+2. Producción → pasa a edición/revisión.
+3. Cliente aprueba la pieza → queda marcada como aprobada.
+4. Ribera marca manualmente el contenido como publicado.
 
-- YouTube: embed directo.
-- Google Drive archivo compartido: se transforma a `/preview`.
-- MP4/WebM directo: reproductor HTML5.
-- Imágenes directas: preview de imagen.
+## Cache
 
-Si Google Drive no deja reproducir, revisar que el archivo esté compartido con permiso de visualización.
+Abrir con:
+
+`?v=final104`
